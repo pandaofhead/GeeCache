@@ -1,17 +1,27 @@
-# Caching
+# Structure Tree
+```
+geecache/  
+    |--lru/
+        |--lru.go  // lru 缓存淘汰策略
+    |--byteview.go // 缓存值的抽象与封装
+    |--cache.go    // 并发控制
+    |--geecache.go // 负责与外部交互，控制缓存存储和获取的主流程
+	|--http.go     // 提供被其他节点访问的能力(基于http)
+```
+## Caching
 
-## FIFO
+- FIFO
 First In First Out: dosen't take frequency into account.
 
-## LFU
+- LFU
 Least Frequently Used: only take frequency into account.
-## LRU
+- LRU
 Least Recently Used: if some data has been used, then move it to the end of list, and the head of list will be the least recently used data, hence detele it.
 
-# LRU
+## LRU
 ![LRU](/public/lru.jpg)
 
-# sync.Mutex: 
+**sync.Mutex:**  
 Mutexes only allow one goroutine to acquire the lock and access the shared resource, while other goroutines wait until the lock is released.
 ```go
 func (c *cache) add(key string, value ByteView) {
@@ -25,3 +35,30 @@ func (c *cache) add(key string, value ByteView) {
 	c.lru.Add(key, value)
 }
 ```
+
+## HTTP in Go
+> `http.ListenAndServer` takes two arguments, the first is address of service, the second is `Handler`.
+
+Usage of standard HTTP module:
+```go
+package main
+
+import (
+	"log"
+	"net/http"
+)
+
+type server int
+
+func (h *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.URL.Path)
+	w.Write([]byte("Hello World!"))
+}
+
+func main() {
+	var s server
+	http.ListenAndServe("localhost:9999", &s)
+}
+```
+
+
