@@ -10,6 +10,8 @@ A standalone and **HTTP-based** distributed caching system, utilizing Go for eff
 # Structure Tree
 ```
 gee-cache
+	|--README.md
+	|--public
 	|--go.mod
 	|--main.go
 	|--geecache/  
@@ -21,6 +23,7 @@ gee-cache
 		|--geecache.go	// 负责与外部交互，控制缓存存储和获取的主流程
 		|--geecache_test.go 
 		|--http.go     // 提供被其他节点访问的能力(基于http)
+		|--go.mod // dependency mamagement
 ```
 ## Caching
 
@@ -75,4 +78,22 @@ func main() {
 }
 ```
 
+## Consistent Hashing
+**Hashing**  
+To map the same key to the same node, the simplest method of hash algorithms is modulo operations. For example, in a distributed system with 3 nodes, data is mapped based on the formula hash(key) % 3.
 
+However, there's a fetal problem: one change in node could result in Cache Avalanche.
+
+**Consistent Hashing**  
+Consistent hashing involves two steps:
+
+- The first step is to perform a hash calculation on the storage nodes, that is, to perform a hash mapping of the storage nodes, such as hashing based on the node's IP address.
+- The second step is to perform a hash mapping of the data when storing or accessing the data.
+
+**Virtual Nodes**  
+Instead of mapping the real nodes onto the hash ring, virtual nodes are mapped onto the hash ring, and these virtual nodes are then mapped to the actual nodes. 
+```
+			-> vitual node 
+real node   -> vitual node -> hash ring
+			-> vitual node 
+```
