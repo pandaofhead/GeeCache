@@ -97,3 +97,5 @@ Instead of mapping the real nodes onto the hash ring, virtual nodes are mapped o
 real node   -> vitual node -> hash ring
 			-> vitual node 
 ```
+
+## Distributed Nodes
