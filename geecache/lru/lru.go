@@ -23,6 +23,7 @@ type Value interface {
 	Len() int
 }
 
+// constructor of Cache
 func New(maxBytes int64, onEvicted func(string, Value)) *Cache {
 	return &Cache{
 		maxBytes:  maxBytes,
@@ -37,7 +38,7 @@ func New(maxBytes int64, onEvicted func(string, Value)) *Cache {
 func (c *Cache) Get(key string) (value Value, ok bool) {
 	if ele, ok := c.cache[key]; ok {
 		c.ll.MoveToFront(ele)
-		kv := ele.Value.(*entry)
+		kv := ele.Value.(*entry) // kv is a temp pointer of input entry
 		return kv.value, true
 	}
 	return

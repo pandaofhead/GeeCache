@@ -40,7 +40,7 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic("HTTPPool serving unexpected path:" + r.URL.Path)
 
 	}
-	p.Log("%s %s", r.Method, r.URL.Path)
+	p.Log("%s %s", r.Method, r.URL.Path) // [Server Server1] GET /path/to/resource
 
 	parts := strings.SplitN(r.URL.Path[len(p.basePath):], "/", 2)
 	if len(parts) != 2 {
