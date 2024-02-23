@@ -1,7 +1,7 @@
 Table of Contents
 - [Project Structure Tree](#project-structure-tree)
 - [Caching](#caching)
-- [HTTP in Go](#http-in-go)
+- [HTTP Server](#http-server)
 - [Consistent Hashing](#consistent-hashing)
 - [Distributed Nodes](#distributed-nodes)
 - [Single Flight](#single-flight)
@@ -141,27 +141,77 @@ func Printf(format string, a ...any) (n int, err error)
 ```
 ## [Consistent Hashing](https://www.xiaolincoding.com/os/8_network_system/hash.html)
 **Hashing**  
-To map the same key to the same node, the simplest method of hash algorithms is modulo operations. For example, in a distributed system with 3 nodes, data is mapped based on the formula hash(key) % 3.
+In a distributed system, data will be distributed into different nodes. To save space and time, we should try to map the same key to the same node, the simplest method of hashing is modulo operations. For example, there're 3 nodes, key is mapped based on the formula `hash(key) % 3`.
 
-However, there's a fetal problem: one change in node could result in Cache Avalanche.
+However, one big issue coming up: one change in a node could result in [Cache Avalanche](#single-flight) because the change of cache mapping.
 
 **Consistent Hashing**  
-Consistent hashing involves two steps:
+Imagine a hash ring consists of 2^32 nodes:
 
-- The first step is to perform a hash calculation on the storage nodes, that is, to perform a hash mapping of the storage nodes, such as hashing based on the node's IP address.
-- The second step is to perform a hash mapping of the data when storing or accessing the data.
+- First, perform a hash calculation on the storage nodes, that is, to perform a hash mapping of the storage nodes, such as hashing based on the node's IP address.
+- Then perform a hash mapping(clockwise) on the ring when storing or accessing the data.
+
+However, yes another however, there's still a problem: nodes will be unevenly placed on the ring, causing many keys point to one node, which might also lead to [Cache Avalanche](#single-flight).
 
 **Virtual Nodes**  
-Instead of mapping the real nodes onto the hash ring, virtual nodes are mapped onto the hash ring, and these virtual nodes are then mapped to the actual nodes. 
+Virtual nodes are mapped onto the hash ring, and these virtual nodes are then mapped to the actual nodes. 
 ```
-			-> vitual node 
-real node   -> vitual node -> hash ring
-			-> vitual node 
+vitual node(A-1) 
+vitual node(A-2) -> real node(A) -> hash ring
+vitual node(A-3) 
+```
+Now even with changes in nodes, mutiple virtual nodes together will take in changes and increase stability.
+
+### crc32.ChecksumIEEE
+```go
+func ChecksumIEEE(data []byte) uint32
+```
+The CRC-32 checksum is a type of hash function that generates a 32-bit (4-byte) hash value,
+
+### [strconv.Itoa()](https://pkg.go.dev/strconv#Itoa)
+int to string
+```go
+func Itoa(i int) string
+```
+
+### [strconv.Atoi()](https://pkg.go.dev/strconv#Itoa)
+string to int
+```go
+func Atoi(s string) (int, error)
+```
+
+### sort.Ints()
+Ints sorts a slice of ints in increasing order.
+### [sort.Search()](https://pkg.go.dev/sort#example-Search)
+Search uses **binary search** to find and return the smallest index i in [0, n) at which f(i) is true, assuming that on the range [0, n), f(i) == true implies f(i+1) == true. 
+```go
+func Search(n int, f func(int) bool) int
+
+idx := sort.Search(len(m.keys), func(i int) bool {
+		return m.keys[i] >= hash
+})
 ```
 
 ## Distributed Nodes
+```
+                	1
+key --> cached? -----> return cache(key)
+                |  0                        	1
+                |-----> get from remote nodes? -----> interacts with remote nodes --> return cache(key)
+                            |  0
+                            |-----> callback func gets value and add to cache --> return cache(key)
+```
 
+### [url.QueryEscape](https://pkg.go.dev/net/url#QueryEscape)
+QueryEscape escapes the string so it can be safely placed inside a URL query.
+```go
+func main() {
+	query := url.QueryEscape("my/cool+blog&about,stuff")
+	fmt.Println(query)
 
+}
+// my%2Fcool%2Bblog%26about%2Cstuff
+```
 ## Single Flight
 
 - **Cache Avalanche:** cache server crashes or setting the same expiration time for cached keys, causing a sudden increase in database request volume and pressure, leading to an avalanche.

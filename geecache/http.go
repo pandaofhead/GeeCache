@@ -24,6 +24,7 @@ type HTTPPool struct {
 	httpGetters map[string]*httpGetter // keyed by e.g. "http://10.0.0.2:8008"
 }
 
+// ----------server----------
 func NewHTTPPool(self string) *HTTPPool {
 	return &HTTPPool{
 		self:     self,
@@ -68,6 +69,7 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// --------client----------
 type httpGetter struct {
 	baseURL string
 }
