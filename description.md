@@ -213,10 +213,74 @@ func main() {
 // my%2Fcool%2Bblog%26about%2Cstuff
 ```
 ## Single Flight
+### Cache Avalanche: 
+cache server crashes or setting the same expiration time for cached keys, causing a sudden increase in database request volume and pressure, leading to an avalanche.
 
-- **Cache Avalanche:** cache server crashes or setting the same expiration time for cached keys, causing a sudden increase in database request volume and pressure, leading to an avalanche.
+### Cache Penetration: 
+When a **key that exists expires**, and simultaneously, a large number of requests occur, these requests will **penetrate through to the database**, causing a sudden increase in database request volume and pressure.
 
-- **Cache Penetration:** When a **key that exists expires**, and simultaneously, a large number of requests occur, these requests will **penetrate through to the database**, causing a sudden increase in database request volume and pressure.
+### Cache Piercing: 
+**Querying for data that does not exist.** Since it does not exist, it will not be written to the cache, so every request will go to the database. If there is a large amount of traffic in a short time, it can penetrate through to the database, leading to a crash.
 
-- **Cache Piercing:** **Querying for data that does not exist.** Since it does not exist, it will not be written to the cache, so every request will go to the database. If there is a large amount of traffic in a short time, it can penetrate through to the database, leading to a crash.
+To make sure that same keys call HTTP once such that no cache penetration, we use singleflight to protect database.
 
+**Mutex and WaitGroup are important for the implenmentation.**
+```go
+	// if the key is already in-flight, wait for it
+	if c, ok := g.m[key]; ok {
+		g.mu.Unlock() // unlock before wg.Wait()
+		c.wg.Wait()   // wait for the call to complete
+		return c.val, c.err
+	}
+
+	// the key is not in-flight; make the fn call
+	c := new(call)
+	c.wg.Add(1)
+	g.m[key] = c
+
+	// unlock and get key from remote
+	g.mu.Unlock()
+	c.val, c.err = fn()
+	c.wg.Done()
+```
+- if we can get the key from map, we unlock it and wait for it to finish fetching
+- if the key has to be fetched from remote, we add one on wait, unlock and fetch, then lock it
+
+```go
+	// remove the key from the map
+	// prevents memory leak and updates the map
+	g.mu.Lock()
+	delete(g.m, key)
+	g.mu.Unlock()
+```
+
+### sync.WaitGroup
+sync.WaitGroup拥有一个内部计数器，当计数器等于0时，Wait()方法会立即返回
+```go
+func (wg *WaitGroup) Add(delta int) // Add添加n个并发协程
+func (wg *WaitGroup) Done()  		// Done完成一个并发协程
+func (wg *WaitGroup) Wait()  		// Wait等待其它并发协程结束
+
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+func main() {
+    wg := &sync.WaitGroup{}
+    for i := 0; i < 5; i++ {
+        wg.Add(1)
+        go func(i int) { // Pass the loop variable as an argument to the goroutine
+            defer wg.Done()
+            time.Sleep(1 * time.Second)
+            fmt.Printf("hello world ~ %d\n", i) // Optionally print the value of i
+        }(i) // Pass the loop variable i to the goroutine
+    }
+    // Wait for all goroutines to finish
+    wg.Wait()
+    fmt.Println("WaitGroup all process done ~")
+}
+```

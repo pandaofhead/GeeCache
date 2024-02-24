@@ -7,4 +7,3 @@ A standalone and **HTTP-based** distributed caching system, utilizing Go for eff
 - Applied **consistent hashing** for node selection within the distributed system, ensuring effective load balancing and improving scalability and fault tolerance.
 - Integrated **Protocol Buffers (protobuf)** for node communication, optimizing binary data exchange to reduce latency and bandwidth usage, resulting in faster response times and improved overall efficiency.
 
-For more functions and project details, please see [description](/description.md).

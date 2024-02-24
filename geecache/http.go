@@ -101,19 +101,22 @@ func (h *httpGetter) Get(group string, key string) ([]byte, error) {
 	return bytes, nil
 }
 
+// add key to consistenthash.Map
 func (p *HTTPPool) Set(peers ...string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+
+	// consistenthash.New() returns a Map, which is a map of hash keys to peers.
 	p.peers = consistenthash.New(defaultReplicas, nil)
 	p.peers.Add(peers...)
 	p.httpGetters = make(map[string]*httpGetter, len(peers))
 
 	for _, peer := range peers {
 		p.httpGetters[peer] = &httpGetter{baseURL: peer + p.basePath}
-
 	}
 }
 
+// PickPeer picks a peer according to key and returns the corresponding HTTPGetter.
 func (p *HTTPPool) PickPeer(key string) (PeerGetter, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()

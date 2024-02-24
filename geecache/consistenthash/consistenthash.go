@@ -28,6 +28,7 @@ func New(replicas int, fn Hash) *Map {
 	return m
 }
 
+// Add adds some keys to the hash
 func (m *Map) Add(keys ...string) {
 	for _, key := range keys {
 		for i := 0; i < m.replicas; i++ {
@@ -39,6 +40,7 @@ func (m *Map) Add(keys ...string) {
 	sort.Ints(m.keys)
 }
 
+// Get gets the closest item in the hash to the provided key
 func (m *Map) Get(key string) string {
 	if len(m.keys) == 0 {
 		return ""
