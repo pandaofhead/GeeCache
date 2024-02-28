@@ -5,7 +5,7 @@ Table of Contents
 - [Consistent Hashing](#consistent-hashing)
 - [Distributed Nodes](#distributed-nodes)
 - [Single Flight](#single-flight)
-- [Functions and Packages](#functions-and-packages)
+- [Protocol Buffers](#protocol-buffers)
 
 # Project Structure Tree
 ```
@@ -194,7 +194,7 @@ idx := sort.Search(len(m.keys), func(i int) bool {
 
 ## Distributed Nodes
 ```
-                	1
+                  1
 key --> cached? -----> return cache(key)
                 |  0                        	1
                 |-----> get from remote nodes? -----> interacts with remote nodes --> return cache(key)
@@ -222,6 +222,7 @@ When a **key that exists expires**, and simultaneously, a large number of reques
 ### Cache Piercing: 
 **Querying for data that does not exist.** Since it does not exist, it will not be written to the cache, so every request will go to the database. If there is a large amount of traffic in a short time, it can penetrate through to the database, leading to a crash.
 
+｜-------------------------------------------------｜  
 To make sure that same keys call HTTP once such that no cache penetration, we use singleflight to protect database.
 
 **Mutex and WaitGroup are important for the implenmentation.**
@@ -284,3 +285,14 @@ func main() {
     fmt.Println("WaitGroup all process done ~")
 }
 ```
+## [Protocol Buffers](https://protobuf.dev/)
+**Protocol Buffers are language-neutral, platform-neutral extensible mechanisms for serializing structured data.**
+
+|Protobuf|JSON/XML|
+|---|---|
+|binary|text-based|
+|smaller|larger|
+|separation of context and data||
+
+> To install and start using Protocol Buffers, see [ProtoUsage.md](ProtoUsage.md)
+
