@@ -1,16 +1,16 @@
 # GoLightCache: A High-Performance Caching System
 > ✨Inspired by [GeeCache](https://geektutu.com/post/geecache.html)
 
-A standalone and **HTTP-based** distributed caching system, utilizing Go for efficient cache management and network communication.
+A standalone **Golang distributed caching system**, utilizing **gRPC and etcd** for efficient cache management and network communication.
 
-- Implemented the **Least Recently Used (LRU)** algorithm to optimize cache storage by automatically discarding the least accessed items, enhancing system performance and resource utilization.
-- Engineered a robust **lock mechanism in Go** to safeguard against cache penetration, significantly increasing system reliability and stability under high-load conditions.
-- Applied **consistent hashing** for node selection within the distributed system, ensuring effective load balancing and improving scalability and fault tolerance.
+- Implemented the **LRU and LFU** algorithm to optimize cache storage by automatically discarding the least accessed items, enhancing system performance and resource utilization.
+- Engineered **gRPC-based** distributed cache to enable multiple nodes to work together, improving system scalability and fault tolerance.
+- Applied **Consistent Hashing** for node selection within the distributed system, ensuring effective load balancing and improving scalability and fault tolerance.
 - Integrated **Protocol Buffers (protobuf)** for node communication, optimizing binary data exchange to reduce latency and bandwidth usage, resulting in faster response times and improved overall efficiency.
+- Utilized **etcd** for service registration and discovery, enabling nodes to automatically discover each other and work together, improving system scalability and fault tolerance.
 
 Improvements on GeeCache:
 - Add **LFU** algorithm to cache
-- Add **HotCache** to prevent cache penetration
 - Add **ttl** and **lazy delete** to cache
 - Add **grpc** to communicate between nodes
 - Add **etcd** to register and discover nodes
