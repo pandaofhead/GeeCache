@@ -1,5 +1,5 @@
 # GoLightCache: A High-Performance Caching System
-> ✨Inspired by [GeeCache](https://geektutu.com/post/geecache.html)
+> ✨Inspired by [GeeCache](https://geektutu.com/post/geecache.html)✨
 
 A standalone **Golang distributed caching system**, utilizing **gRPC and etcd** for efficient cache management and network communication.
 
@@ -15,6 +15,8 @@ Improvements on GeeCache:
 - Add **grpc** to communicate between nodes
 - Add **etcd** to register and discover nodes
 
+# Project Workflow
+![workflow](./public/golightcache.png)
 
 # Project Structure Tree
 ```bash
