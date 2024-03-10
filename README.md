@@ -9,53 +9,55 @@ A standalone **Golang distributed caching system**, utilizing **gRPC and etcd** 
 - Integrated **Protocol Buffers (protobuf)** for node communication, optimizing binary data exchange to reduce latency and bandwidth usage, resulting in faster response times and improved overall efficiency.
 - Utilized **etcd** for service registration and discovery, enabling nodes to automatically discover each other and work together, improving system scalability and fault tolerance.
 
-Improvements on GeeCache:
+✨Improvements on original design✨:
 - Add **LFU** algorithm to cache
-- Add **ttl** and **lazy delete** to cache
-- Add **grpc** to communicate between nodes
+- Add **TTL** and **lazy delete** to cache
+- Add **gRPC** to communicate between nodes
 - Add **etcd** to register and discover nodes
 
-# Project Workflow
+# GoLightCache Workflow
 ![workflow](./public/golightcache.png)
 
-# Project Structure Tree
+# Structure Tree
 ```bash
 │  go.mod
 │  go.sum
-│  main.go	main函数,用于测试
-│  README.md	MD文档
-│  run.sh	Linux下测试
+│  main.go	
+│  README.md	
+│  run.sh	
 │
 └─geecache
-    │  byteview.go	缓存值的抽象与封装
-    │  cache.go	并发控制
+    │  byteview.go	// cache abstraction layer
+    │  cache.go	    // cocurrent safe cache
     │  geecache.go	负责与外部交互，控制缓存存储和获取的主流程
     │  geecache_test.go 			
-    │  peers.go	抽象 PeerPicker
-    │  grpc.go	Server和Client的实现
+    │  peers.go	// abstract PeerPicker
+    │  grpc.go	// Server/Client for gRPC
     │
     ├─consistenthash
-    │      consistenthash.go	一致性哈希算法
+    │      consistenthash.go	
     │      consistenthash_test.go	
     │
     ├─geecachepb
     │      geecachepb.pb.go
-    │      geecachepb.proto	protobuf文件
+    │      geecachepb.proto	
     │      geecachepb_grpc.pb.go
     │
     ├─lfu
-    │      lfu.go	LFU算法
+    │      lfu.go	
     │      lfu_test.go
     │
     ├─lru
-    │      lru.go	LRU算法
+    │      lru.go	
     │      lru_test.go
     │
     ├─registry	
-    │      discover.go	服务发现
-    │      register.go	服务注册
+    │      discover.go	
+    │      register.go	
     │
     └─singleflight
             singleflight.go	防止缓存击穿
             singleflight_test.go
 ```
+## Install protoc
+please see [ProtoUsage.md](./ProtoUsage.md)

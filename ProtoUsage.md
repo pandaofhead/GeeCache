@@ -24,7 +24,7 @@ syntax = "proto3";
 package geecachepb;
 
 // Specify the Go package where the code will be generated.
-option go_package = "/";
+option go_package = "/;geecachepb";
 
 message Request {
   string group = 1;
