@@ -1,11 +1,11 @@
 package geecache
 
 import (
-	"Geecache/geecache/consistenthash"
-	pb "Geecache/geecache/geecachepb"
-	"Geecache/geecache/registry"
 	"context"
 	"fmt"
+	"geecache/consistenthash"
+	pb "geecache/geecachepb"
+	"geecache/registry"
 	"log"
 	"net"
 	"strings"
@@ -217,7 +217,7 @@ func NewClient(service string) *Client {
 var _ PeerGetter = (*Client)(nil)
 
 /*
-如何理解这个Server和Client。
+如何理解这个Server和Client呢？
 比如,我8003端口pick远程节点是8001端口，
 那么8003端口的Client就会发送grpc请求给8001端口，
 8001端口的Server就会处理8003端口发过来的grpc请求。
