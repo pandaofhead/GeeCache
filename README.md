@@ -59,5 +59,3 @@ A standalone **Golang distributed caching system**, utilizing **gRPC and etcd** 
             singleflight.go	防止缓存击穿
             singleflight_test.go
 ```
-## Install protoc
-please see [ProtoUsage.md](./ProtoUsage.md)
